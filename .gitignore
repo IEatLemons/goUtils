@@ -13,6 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+.vscode/settings.json
 
 # on-premises environment configuration
 .env
@@ -23,6 +24,13 @@
 
 # local test
 *local_test.go
+Off-line-material
 
 # gmail file
 credentials.json
+token.json
+credentials*.json
+token*.json
+
+# File 
+file/tmp/
