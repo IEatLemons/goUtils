@@ -34,3 +34,7 @@ func GetFiles(folder string, list *Files) (err error) {
 	}
 	return
 }
+
+func GetFile(folder string) (file []byte, err error) {
+	return ioutil.ReadFile(folder)
+}

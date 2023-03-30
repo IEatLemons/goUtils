@@ -28,7 +28,7 @@ type V0Info struct {
 func (IPFS *IPFSV0) LS(path string) (List *ResultLS, err error) {
 	fmt.Println("[IPFS LS]", path)
 	url := IPFS.Url + APIV0FILES + "/ls?arg=" + path
-	result, err := request.NewRequest(url).Post(nil).Send()
+	result, err := request.NewRequest(url).BasicAuth(IPFS.BasicAuth).Post(nil).Send()
 	if err != nil {
 		return
 	}
@@ -40,7 +40,7 @@ func (IPFS *IPFSV0) LS(path string) (List *ResultLS, err error) {
 func (IPFS *IPFSV0) Stat(path string) (Info *V0Info, err error) {
 	fmt.Println("[IPFS LS]", path)
 	url := IPFS.Url + APIV0FILES + "/stat?arg=" + path
-	result, err := request.NewRequest(url).Post(nil).Send()
+	result, err := request.NewRequest(url).BasicAuth(IPFS.BasicAuth).Post(nil).Send()
 	if err != nil {
 		return
 	}
@@ -53,7 +53,7 @@ func (IPFS *IPFSV0) RM(name string) {
 	fmt.Println("[IPFS RM]", name)
 	url := IPFS.Url + APIV0FILES + "/rm?arg=" + name
 
-	result, err := request.NewRequest(url).Post(nil).Send()
+	result, err := request.NewRequest(url).BasicAuth(IPFS.BasicAuth).Post(nil).Send()
 	if err != nil {
 		log.Println("[IPFS RM]", err)
 	} else {
@@ -66,7 +66,7 @@ func (IPFS *IPFSV0) ADD(Payload *request.Payload, path string) {
 	url := IPFS.Url + APIV0FILES + "/write?create=true&arg=" + path
 	result, err := request.NewRequest(url, []request.RequestOptions{
 		request.SetContentType(request.MulFormData),
-	}...).File(Payload).Send()
+	}...).BasicAuth(IPFS.BasicAuth).File(Payload).Send()
 	if err != nil {
 		log.Println("[IPFS ADD]", err)
 	} else {

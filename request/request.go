@@ -14,12 +14,13 @@ import (
 )
 
 type Request struct {
-	Path        string
-	Params      ReqParams
-	Method      RequestMethod
-	Header      map[string]string
-	ContentType RequestContentType
-	Payload     *Payload
+	Path         string
+	Params       ReqParams
+	Method       RequestMethod
+	Header       map[string]string
+	ContentType  RequestContentType
+	Payload      *Payload
+	BasicAuthKey string
 }
 
 type Payload struct {
@@ -115,6 +116,11 @@ func (R *Request) File(Payload *Payload) *Request {
 	return R
 }
 
+func (R *Request) BasicAuth(BasicAuth string) *Request {
+	R.BasicAuthKey = BasicAuth
+	return R
+}
+
 func (R *Request) Send() (result []byte, err error) {
 	client := &http.Client{}
 	var req *http.Request
@@ -138,16 +144,19 @@ func (R *Request) Send() (result []byte, err error) {
 		log.Println("[Request]", "["+R.Method+"]", url, body)
 		req, err = http.NewRequest(string(R.Method), url, body)
 	}
-
 	if err != nil {
 		return
 	}
+
 	req.Header.Add("Content-Type", string(R.ContentType))
 
 	if R.Header != nil {
 		for k, v := range R.Header {
 			req.Header.Add(k, v)
 		}
+	}
+	if R.BasicAuthKey != "" {
+		req.Header.Add("Authorization", "Basic "+R.BasicAuthKey)
 	}
 
 	resp, err := client.Do(req)
