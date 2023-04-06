@@ -19,15 +19,15 @@ type ResultLS struct {
 }
 
 type V0Info struct {
-	Name           string `json:"Name"`
-	Type           int    `json:"Type"`
-	Size           int    `json:"Size"`
-	Hash           string `json:"Hash"`
-	CumulativeSize int    `json:"CumulativeSize"`
-	Blocks         int    `json:"Blocks"`
+	Name           string      `json:"Name"`
+	Type           interface{} `json:"Type"`
+	Size           int         `json:"Size"`
+	Hash           string      `json:"Hash"`
+	CumulativeSize int         `json:"CumulativeSize"`
+	Blocks         int         `json:"Blocks"`
 }
 
-func (IPFS *IPFSV0) LS(path string) (List *ResultLS, err error) {
+func (IPFS *IPFSV0) LS(path string, isHash bool) (List *ResultLS, err error) {
 	fmt.Println("[IPFS LS]", path)
 	url := IPFS.Url + APIV0FILES + "/ls?arg=" + path
 	result, err := request.NewRequest(url).BasicAuth(IPFS.BasicAuth).Post(nil).Send()
@@ -36,11 +36,24 @@ func (IPFS *IPFSV0) LS(path string) (List *ResultLS, err error) {
 	}
 	List = &ResultLS{}
 	err = json.Unmarshal(result, List)
+	if err != nil {
+		return
+	}
+	if isHash {
+		for k, v := range List.Entries {
+			stat, err := IPFS.Stat(path + "/" + v.Name)
+			if err != nil {
+				log.Print(v.Name, "err")
+				log.Fatalln(err)
+			}
+			List.Entries[k].Hash = stat.Hash
+		}
+	}
 	return
 }
 
 func (IPFS *IPFSV0) Stat(path string) (Info *V0Info, err error) {
-	fmt.Println("[IPFS LS]", path)
+	fmt.Println("[IPFS Stat]", path)
 	url := IPFS.Url + APIV0FILES + "/stat?arg=" + path
 	result, err := request.NewRequest(url).BasicAuth(IPFS.BasicAuth).Post(nil).Send()
 	if err != nil {
