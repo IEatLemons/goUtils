@@ -12,6 +12,8 @@ const (
 	APIV0FILES = "/api/v0/files"
 )
 
+type Files struct{}
+
 type ResultLS struct {
 	Entries []*V0Info `json:"Entries"`
 }
@@ -49,6 +51,18 @@ func (IPFS *IPFSV0) Stat(path string) (Info *V0Info, err error) {
 	return
 }
 
+func (IPFS *IPFSV0) CP(source, dest string) {
+	fmt.Println("[IPFS CP]", source, "to", dest)
+	url := IPFS.Url + APIV0FILES + "/cp?arg=" + source + "&arg=" + dest
+
+	result, err := request.NewRequest(url).BasicAuth(IPFS.BasicAuth).Post(nil).Send()
+	if err != nil {
+		log.Println("[IPFS CP]", err)
+	} else {
+		fmt.Println("[IPFS CP]", "done", string(result))
+	}
+}
+
 func (IPFS *IPFSV0) RM(name string) {
 	fmt.Println("[IPFS RM]", name)
 	url := IPFS.Url + APIV0FILES + "/rm?arg=" + name
@@ -71,5 +85,27 @@ func (IPFS *IPFSV0) ADD(Payload *request.Payload, path string) {
 		log.Println("[IPFS ADD]", err)
 	} else {
 		fmt.Println("[IPFS ADD]", "done", string(result))
+	}
+}
+
+func (IPFS *IPFSV0) READ(path string) {
+	fmt.Println("[IPFS FLUSH]", path)
+	url := IPFS.Url + APIV0FILES + "/read?arg=" + path
+	result, err := request.NewRequest(url).Post(nil).BasicAuth(IPFS.BasicAuth).Send()
+	if err != nil {
+		log.Println("[IPFS FLUSH]", err)
+	} else {
+		fmt.Println("[IPFS FLUSH]", "done", string(result))
+	}
+}
+
+func (IPFS *IPFSV0) FLUSH(path string) {
+	fmt.Println("[IPFS FLUSH]", path)
+	url := IPFS.Url + APIV0FILES + "/flush?arg=" + path
+	result, err := request.NewRequest(url).Post(nil).BasicAuth(IPFS.BasicAuth).Send()
+	if err != nil {
+		log.Println("[IPFS FLUSH]", err)
+	} else {
+		fmt.Println("[IPFS FLUSH]", "done", string(result))
 	}
 }
