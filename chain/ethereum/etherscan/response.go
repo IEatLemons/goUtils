@@ -1,4 +1,4 @@
-package ethereum
+package etherscan
 
 type UnifyResponse struct {
 	Status  string `json:"status"`

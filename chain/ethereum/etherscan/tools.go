@@ -1,4 +1,4 @@
-package ethereum
+package etherscan
 
 import (
 	"encoding/json"
@@ -7,8 +7,10 @@ import (
 	"github.com/IEatLemons/goUtils/communicate"
 )
 
+type APIHOST string
+
 const (
-	EtherscanUrl string = "https://api.etherscan.io/api"
+	EtherscanUrl APIHOST = "https://api.etherscan.io/api"
 )
 
 var EtherScan *Etherscan
@@ -69,7 +71,7 @@ func NewEtherscan() (*Etherscan, error) {
 }
 
 func (E *Etherscan) Request(Params Request, Result interface{}) (err error) {
-	JsonBytes, err := communicate.Request(communicate.GET, EtherscanUrl, Params.GetParams(E.Apikey), communicate.FormUrl)
+	JsonBytes, err := communicate.Request(communicate.GET, string(EtherscanUrl), Params.GetParams(E.Apikey), communicate.FormUrl)
 	if err != nil {
 		return
 	}
