@@ -121,7 +121,7 @@ func (R *Request) BasicAuth(BasicAuth string) *Request {
 	return R
 }
 
-func (R *Request) Send() (result []byte, err error) {
+func (R *Request) Resources() (Body io.ReadCloser, err error) {
 	client := &http.Client{}
 	var req *http.Request
 	var body *strings.Reader
@@ -132,7 +132,7 @@ func (R *Request) Send() (result []byte, err error) {
 	default:
 		params, err := json.Marshal(R.Params)
 		if err != nil {
-			return []byte{}, err
+			return nil, err
 		}
 		body = strings.NewReader(string(params))
 	}
@@ -164,7 +164,16 @@ func (R *Request) Send() (result []byte, err error) {
 		return
 	}
 	defer resp.Body.Close()
-	result, err = ioutil.ReadAll(resp.Body)
+	Body = resp.Body
+	return
+}
+
+func (R *Request) Send() (result []byte, err error) {
+	Body, err := R.Resources()
+	if err != nil {
+		return
+	}
+	result, err = ioutil.ReadAll(Body)
 	return
 }
 
