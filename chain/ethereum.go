@@ -1,6 +1,7 @@
 package chain
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"fmt"
 	"log"
@@ -8,6 +9,7 @@ import (
 	"math/big"
 	"os"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -95,4 +97,20 @@ func TokenToAmount(token *big.Int, decimals int) *big.Float {
 	divisor := new(big.Float).SetInt(token)
 	dividend := new(big.Float).SetFloat64(math.Pow10(decimals))
 	return new(big.Float).Quo(divisor, dividend)
+}
+
+func GetAuth(Client *ethclient.Client, ChainID *big.Int, Operator *ecdsa.PrivateKey) (auth *bind.TransactOpts, err error) {
+	auth, err = bind.NewKeyedTransactorWithChainID(Operator, ChainID)
+	if err != nil {
+		return
+	}
+	con := context.Background()
+	nonce, err := Client.PendingNonceAt(con, crypto.PubkeyToAddress(*(GetPublicKey(Operator))))
+	if err != nil {
+		return
+	}
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)
+	auth.GasPrice, err = Client.SuggestGasPrice(con)
+	return
 }

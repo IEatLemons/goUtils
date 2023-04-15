@@ -121,7 +121,27 @@ func (R *Request) BasicAuth(BasicAuth string) *Request {
 	return R
 }
 
+func (R *Request) Resources() (Body io.ReadCloser, err error) {
+	resp, err := R.newRequest()
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	Body = resp.Body
+	return
+}
+
 func (R *Request) Send() (result []byte, err error) {
+	resp, err := R.newRequest()
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	result, err = ioutil.ReadAll(resp.Body)
+	return
+}
+
+func (R *Request) newRequest() (result *http.Response, err error) {
 	client := &http.Client{}
 	var req *http.Request
 	var body *strings.Reader
@@ -132,7 +152,7 @@ func (R *Request) Send() (result []byte, err error) {
 	default:
 		params, err := json.Marshal(R.Params)
 		if err != nil {
-			return []byte{}, err
+			return nil, err
 		}
 		body = strings.NewReader(string(params))
 	}
@@ -158,14 +178,7 @@ func (R *Request) Send() (result []byte, err error) {
 	if R.BasicAuthKey != "" {
 		req.Header.Add("Authorization", "Basic "+R.BasicAuthKey)
 	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-	result, err = ioutil.ReadAll(resp.Body)
-	return
+	return client.Do(req)
 }
 
 func CreateFileData(Field, Filepath string, params ReqParams) (payload *Payload, err error) {
