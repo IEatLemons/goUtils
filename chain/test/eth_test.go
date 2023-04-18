@@ -6,15 +6,14 @@ import (
 	"log"
 	"testing"
 
-	"github.com/IEatLemons/goUtils/chain"
+	evm "github.com/IEatLemons/goUtils/chain/ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 func TestBase(t *testing.T) {
-
-	chain.InitEth("http://127.0.0.1:8545")
-	eth_getBalance(chain.ETHCli)
+	evm.InitEth("http://127.0.0.1:8545")
+	eth_getBalance(evm.ETHCli)
 }
 
 func eth_getBalance(client *ethclient.Client) {
@@ -27,5 +26,5 @@ func eth_getBalance(client *ethclient.Client) {
 }
 
 func TestCreate(t *testing.T) {
-	_ = chain.CreatePrivate()
+	_ = evm.CreatePrivate()
 }
