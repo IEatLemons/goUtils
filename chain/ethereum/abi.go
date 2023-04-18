@@ -2,49 +2,77 @@ package evm
 
 import (
 	"context"
-	"strings"
+	"log"
+	"math/big"
+	"time"
 
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-type SamrtContract struct {
-	Client          *ethclient.Client
-	ABI             abi.ABI
-	ContractAddress common.Address
+type OpContract struct {
+	chainID *big.Int
+	client  *ethclient.Client
+	maxGas  *big.Int
+	minGas  *big.Int
 }
 
-func NewSC(rpc, abiJson, ContractAddress string) (*SamrtContract, error) {
-	client, err := ethclient.Dial(rpc)
+func NewOpContract(
+	chainID,
+	maxGas,
+	minGas *big.Int,
+	rpcPath string,
+) *OpContract {
+	client, err := ethclient.Dial(rpcPath)
 	if err != nil {
-		return nil, err
+		log.Fatalln(err)
 	}
-	abi, err := abi.JSON(strings.NewReader(abiJson))
-	if err != nil {
-		return nil, err
+	return &OpContract{
+		chainID: chainID,
+		client:  client,
+		maxGas:  maxGas,
+		minGas:  minGas,
 	}
-	return &SamrtContract{
-		Client:          client,
-		ContractAddress: common.HexToAddress(ContractAddress),
-		ABI:             abi,
-	}, nil
 }
 
-func (SC *SamrtContract) Call(funcName string, args ...interface{}) (returnValue []interface{}, err error) {
-	callData, err := SC.ABI.Pack(funcName, args...)
-	if err != nil {
-		return
-	}
-	result, err := SC.Client.CallContract(context.Background(), ethereum.CallMsg{
-		To:   &SC.ContractAddress,
-		Data: callData,
-	}, nil)
-	if err != nil {
-		return
-	}
+func (c *OpContract) ChainID() *big.Int {
+	return c.chainID
+}
 
-	returnValue, err = SC.ABI.Unpack(funcName, result)
+func (c *OpContract) Client() *ethclient.Client {
+	return c.client
+}
+
+func (c *OpContract) GasPrice() *big.Int {
+	return c.chainID
+}
+
+func (c *OpContract) Gas() (gasPrice *big.Int) {
+	gasPrice, err := c.client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	if gasPrice.Cmp(c.maxGas) > 0 {
+		gasPrice = c.maxGas
+	}
+	if gasPrice.Cmp(c.minGas) < 0 {
+		gasPrice = c.minGas
+	}
+	return
+}
+
+func (c *OpContract) ListenGas() (gasPrice *big.Int) {
+RESET:
+	gasPrice, err := c.client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	if gasPrice.Cmp(c.maxGas) > 0 {
+		log.Println("The current gas is", TokenToAmount(gasPrice, 9).String(), "Gwei, But MaxGas is", TokenToAmount(c.maxGas, 9).String(), "Gwei")
+		time.Sleep(time.Second * 10)
+		goto RESET
+	}
+	if gasPrice.Cmp(c.minGas) < 0 {
+		gasPrice = c.minGas
+	}
 	return
 }
