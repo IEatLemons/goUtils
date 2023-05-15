@@ -17,6 +17,7 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 .vscode/settings.json
+.history
 
 # on-premises environment configuration
 .env
