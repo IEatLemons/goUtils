@@ -16,6 +16,18 @@ type SuiAccount struct {
 	Signer *signer.Signer
 }
 
+func NewMnemonic() string {
+	entropy, err := bip39.NewEntropy(256)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	mnemonic, err := bip39.NewMnemonic(entropy)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return mnemonic
+}
+
 func NewAccount(Mnemonic string) *SuiAccount {
 	signerAccount, err := NewSignerWithMnemonic(Mnemonic, "0")
 	if err != nil {
