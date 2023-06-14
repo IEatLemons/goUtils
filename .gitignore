@@ -21,6 +21,7 @@
 
 # on-premises environment configuration
 .env
+local_test
 
 # solidity
 *abi
