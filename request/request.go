@@ -3,6 +3,7 @@ package request
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -149,6 +150,13 @@ func (R *Request) newRequest() (result *http.Response, err error) {
 	switch R.Method {
 	case GET:
 		body = strings.NewReader("")
+		if R.Params != nil {
+			arg := ""
+			for k, v := range R.Params {
+				arg += fmt.Sprintf("%s=%s&", k, v)
+			}
+			url += "?" + arg
+		}
 	default:
 		params, err := json.Marshal(R.Params)
 		if err != nil {
