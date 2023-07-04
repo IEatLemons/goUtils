@@ -1,26 +1,28 @@
 package trading
 
-import "math"
+import (
+	"math"
+	"math/big"
+)
 
 // Calculate the Bollinger index
-func CalculateBollingerBands(closes []float64, stdDevMultiplier float64, stdDevWindowSize int) ([]float64, []float64, []float64) {
+func CalculateBollingerBands(closes []*big.Float, stdDevMultiplier *big.Float, stdDevWindowSize int) ([]*big.Float, []*big.Float, []*big.Float) {
 	var (
-		upperBand  []float64
-		middleBand []float64
-		lowerBand  []float64
+		upperBand  []*big.Float
+		middleBand []*big.Float
+		lowerBand  []*big.Float
 	)
 
 	period := len(closes)
-	// stdDevMultiplier := 2.0
-	// stdDevWindowSize := 20
 
 	for i := stdDevWindowSize; i < period; i++ {
 		window := closes[i-stdDevWindowSize : i]
 		mean := calculateMean(window)
-		stdDev := calculateStandardDeviation(window, mean)
-		upper := mean + (stdDevMultiplier * stdDev)
 		middle := mean
-		lower := mean - (stdDevMultiplier * stdDev)
+		stdDev := calculateStandardDeviation(window, mean)
+		variable := (new(big.Float)).Mul(stdDevMultiplier, stdDev)
+		upper := (new(big.Float)).Add(mean, variable)
+		lower := (new(big.Float)).Sub(mean, variable)
 
 		upperBand = append(upperBand, upper)
 		middleBand = append(middleBand, middle)
@@ -31,21 +33,22 @@ func CalculateBollingerBands(closes []float64, stdDevMultiplier float64, stdDevW
 }
 
 // Calculated mean
-func calculateMean(values []float64) float64 {
-	sum := 0.0
+func calculateMean(values []*big.Float) *big.Float {
+	sum := big.NewFloat(0)
 	for _, value := range values {
-		sum += value
+		sum.Add(sum, value)
 	}
-	return sum / float64(len(values))
+	return sum.Quo(sum, big.NewFloat(float64(len(values))))
 }
 
 // Calculated standard deviation
-func calculateStandardDeviation(values []float64, mean float64) float64 {
-	sum := 0.0
+func calculateStandardDeviation(values []*big.Float, mean *big.Float) *big.Float {
+	sum := big.NewFloat(0)
 	for _, value := range values {
-		diff := value - mean
-		sum += diff * diff
+		diff := (new(big.Float)).Sub(value, mean)
+		sum.Add(sum, diff.Mul(diff, diff))
 	}
-	variance := sum / float64(len(values))
-	return math.Sqrt(variance)
+	variance := sum.Quo(sum, big.NewFloat(float64(len(values))))
+	v, _ := variance.Float64()
+	return big.NewFloat(math.Sqrt(v))
 }

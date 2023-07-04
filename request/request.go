@@ -21,6 +21,7 @@ type Request struct {
 	Header       map[string]string
 	ContentType  RequestContentType
 	Payload      *Payload
+	RawQuery     string
 	BasicAuthKey string
 }
 
@@ -59,6 +60,12 @@ func SetParams(Params ReqParams) RequestOptions {
 func SetHeader(Header map[string]string) RequestOptions {
 	return func(req *Request) {
 		req.Header = Header
+	}
+}
+
+func SetRawQuery(RawQuery string) RequestOptions {
+	return func(req *Request) {
+		req.RawQuery = RawQuery
 	}
 }
 
@@ -168,6 +175,10 @@ func (R *Request) newRequest() (result *http.Response, err error) {
 		log.Println("[Request]", "["+R.Method+"]", url)
 		req, err = http.NewRequest(string(R.Method), url, R.Payload.Body)
 		req.Header.Set("Content-Type", R.Payload.ContentType)
+	} else if R.RawQuery != "" {
+		log.Println("[Request]", "["+R.Method+"]", url, R.RawQuery)
+		req, err = http.NewRequest(string(R.Method), url, nil)
+		req.URL.RawQuery = R.RawQuery
 	} else {
 		log.Println("[Request]", "["+R.Method+"]", url, body)
 		req, err = http.NewRequest(string(R.Method), url, body)

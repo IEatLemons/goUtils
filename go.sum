@@ -74,6 +74,8 @@ github.com/CloudyKit/jet v2.1.2+incompatible/go.mod h1:HPYO+50pSWkPoj9Q/eq0aRGBy
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 h1:fLjPD/aNc3UIOA6tDi6QXUemppXK3P9BI7mr2hd6gx8=
 github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
+github.com/adshao/go-binance/v2 v2.4.2 h1:NBNMUyXrci45v3sr0RkZosiBYSw1/yuqCrJNkyEM8U0=
+github.com/adshao/go-binance/v2 v2.4.2/go.mod h1:41Up2dG4NfMXpCldrDPETEtiOq+pHoGsFZ73xGgaumo=
 github.com/agrison/go-tablib v0.0.0-20160310143025-4930582c22ee h1:0RklYSvekYaIFI9JUx7TFPQvo++TdILmZiV17QI4nXk=
 github.com/agrison/go-tablib v0.0.0-20160310143025-4930582c22ee/go.mod h1:M9nmO4lBRWR/bBv7UCOmDJ1MB2DVoqz19B4JchDA+K0=
 github.com/agrison/mxj v0.0.0-20160310142625-1269f8afb3b4 h1:XBNSe5eibe5Fh131ah+xnO6s4A97U1T3tKZKLQQvqu0=
@@ -85,6 +87,8 @@ github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b/go.mod h1:1KcenG0jGW
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/benbjohnson/clock v1.3.0 h1:ip6w0uFQkncKQ979AypyG0ER7mqUSBdKLOgAle/AT8A=
 github.com/benbjohnson/clock v1.3.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
+github.com/bitly/go-simplejson v0.5.0 h1:6IH+V8/tVMab511d5bn4M7EwGXZf9Hj6i2xSwkNEM+Y=
+github.com/bitly/go-simplejson v0.5.0/go.mod h1:cXHtHw4XUPsvGaxgjIAn8PhEWG9NfngEKAMDJEczWVA=
 github.com/block-vision/sui-go-sdk v1.0.2 h1:kHMqo15krkiBuwCoOAF6GruemBoLlNC2+MRdXn+EjOI=
 github.com/block-vision/sui-go-sdk v1.0.2/go.mod h1:hHjWU6O/cRYanNme8ICiPh+3uDrKlz/Q40rDv3yCxgw=
 github.com/bndr/gotabulate v1.1.2 h1:yC9izuZEphojb9r+KYL4W9IJKO/ceIO8HDwxMA24U4c=

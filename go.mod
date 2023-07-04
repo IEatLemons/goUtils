@@ -16,6 +16,7 @@ require (
 	github.com/agrison/mxj v0.0.0-20160310142625-1269f8afb3b4 // indirect
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
+	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bndr/gotabulate v1.1.2 // indirect
 	github.com/crackcomm/go-gitignore v0.0.0-20170627025303-887ab5e44cc3 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
@@ -99,6 +100,7 @@ require (
 )
 
 require (
+	github.com/adshao/go-binance/v2 v2.4.2
 	github.com/block-vision/sui-go-sdk v1.0.2
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect

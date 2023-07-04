@@ -22,7 +22,30 @@ type Processing interface {
 	Successful([]byte)
 }
 
-func NewMonitor(conn *websocket.Conn, Proc Processing, Streams ...Stream) {
+type monitor struct {
+	spotWs *binance
+	conn   *websocket.Conn
+}
+
+func InitMonitor(env Environment) (*monitor, error) {
+	spotWs := NewBinance(env, "")
+	conn, _, err := websocket.DefaultDialer.Dial(string(spotWs.SpotWss), nil)
+	if err != nil {
+		return nil, err
+	}
+	m := &monitor{
+		spotWs: NewBinance(env, ""),
+		conn:   conn,
+	}
+	// defer m.conn.Close()
+	return m, nil
+}
+
+func (c *monitor) Close() {
+	c.conn.Close()
+}
+
+func (c *monitor) Monitor(Proc Processing, Streams ...Stream) {
 	if len(Streams) < 1 {
 		log.Fatal("[Binance]The listener must be larger than 1")
 	}
@@ -30,14 +53,14 @@ func NewMonitor(conn *websocket.Conn, Proc Processing, Streams ...Stream) {
 	for _, Stream := range Streams {
 		subscribeMsg := getSubscribeMsg(Stream)
 		// subscribeMsg := fmt.Sprintf(`{"method": "SUBSCRIBE", "params": ["%s@kline_1m"], "id": 1}`, "btcusdt")
-		if err := conn.WriteMessage(websocket.TextMessage, []byte(subscribeMsg)); err != nil {
+		if err := c.conn.WriteMessage(websocket.TextMessage, []byte(subscribeMsg)); err != nil {
 			log.Fatal("[Binance]Sending subscription message error:", err)
 		}
 	}
 
 	go func() {
 		for {
-			_, message, err := conn.ReadMessage()
+			_, message, err := c.conn.ReadMessage()
 			if err != nil {
 				log.Println("[Binance]Read message error:", err)
 				return

@@ -4,67 +4,71 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/big"
+	"net/url"
 	"strconv"
 	"time"
 
-	"github.com/IEatLemons/goUtils/request"
+	binance_struct "github.com/IEatLemons/goUtils/trading/binance/struct"
 )
 
-const (
-	KlinesPath PATH = "/api/v3/klines"
-)
+type klines struct {
+	klines *binance
+}
+
+func InitKLines(env Environment) *klines {
+	return &klines{
+		klines: NewBinance(env, "/api/v3/klines"),
+	}
+}
 
 type KlinesReq struct {
-	Symbol   Symbol   `json:"symbol"`
-	Interval Interval `json:"interval"`
+	Symbol    Symbol    `json:"symbol"`
+	Interval  Interval  `json:"interval"`
+	StartTime time.Time `json:"startTime"`
+	EndTime   time.Time `json:"endTime"`
+	Limit     Interval  `json:"limit"`
 }
 
-type KlinesData struct {
-	Time       time.Time `json:"0"`
-	OpenPrice  float64   `json:"1"`
-	HighPrice  float64   `json:"2"`
-	LowPrice   float64   `json:"3"`
-	ClosePrice float64   `json:"4"`
-	Volume     float64   `json:"5"`
-}
-
-func GetKlines(params *KlinesReq) (Klines []*KlinesData) {
-	reqPar, err := request.Struct2Params(params)
+func (c *klines) GetKlines(params *KlinesReq) (Klines []*binance_struct.KlinesData, err error) {
+	values := &url.Values{}
+	values.Set("symbol", string(params.Symbol))
+	values.Set("interval", string(params.Interval))
+	result, err := c.klines.QuestSimple(values)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	result, err := request.NewRequest(APIURL+string(KlinesPath), []request.RequestOptions{
-		request.SetParams(reqPar),
-	}...).Send()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	// fmt.Println(string(result))
+	log.Println(string(result))
 	var data [][]interface{}
 	err = json.Unmarshal(result, &data)
 	if err != nil {
 		fmt.Println("Parsing JSON failed:", err)
 		return
 	}
-	Klines = []*KlinesData{}
+	Klines = []*binance_struct.KlinesData{}
 	for _, data := range data {
-		openPrice := data[1].(string) // At the opening
-		OpenPrice, _ := strconv.ParseFloat(openPrice, 64)
-		highPrice := data[2].(string) // The highest price
-		HighPrice, _ := strconv.ParseFloat(highPrice, 64)
-		lowPrice := data[3].(string) // Bottom price
-		LowPrice, _ := strconv.ParseFloat(lowPrice, 64)
-		closePrice := data[4].(string) // Closing price
-		ClosePrice, _ := strconv.ParseFloat(closePrice, 64)
-		volume := data[5].(string) // Volume of transaction
-		Volume, _ := strconv.ParseFloat(volume, 64)
-		Kline := &KlinesData{
-			Time:       time.Unix(int64((data[0].(float64) / 1000)), 0),
-			OpenPrice:  OpenPrice,
-			HighPrice:  HighPrice,
-			LowPrice:   LowPrice,
-			ClosePrice: ClosePrice,
-			Volume:     Volume,
+		OpenPrice, _ := strconv.ParseFloat(data[1].(string), 64)
+		HighPrice, _ := strconv.ParseFloat(data[2].(string), 64)
+		LowPrice, _ := strconv.ParseFloat(data[3].(string), 64)
+		ClosePrice, _ := strconv.ParseFloat(data[4].(string), 64)
+		Volume, _ := strconv.ParseFloat(data[5].(string), 64)
+		VolumeOfBusiness, _ := strconv.ParseFloat(data[7].(string), 64)
+		ActiveBuyingVolume, _ := strconv.ParseFloat(data[9].(string), 64)
+		ActiveBuyingTurnover, _ := strconv.ParseFloat(data[10].(string), 64)
+		Ignore, _ := strconv.ParseFloat(data[11].(string), 64)
+		Kline := &binance_struct.KlinesData{
+			OpenTime:             time.Unix(int64((data[0].(float64) / 1000)), 0),
+			OpenPrice:            big.NewFloat(OpenPrice),
+			HighPrice:            big.NewFloat(HighPrice),
+			LowPrice:             big.NewFloat(LowPrice),
+			ClosePrice:           big.NewFloat(ClosePrice),
+			Volume:               big.NewFloat(Volume),
+			ClosingTime:          time.Unix(int64((data[6].(float64) / 1000)), 0),
+			VolumeOfBusiness:     big.NewFloat(VolumeOfBusiness),
+			TxNumber:             int(data[8].(float64)),
+			ActiveBuyingVolume:   big.NewFloat(ActiveBuyingVolume),
+			ActiveBuyingTurnover: big.NewFloat(ActiveBuyingTurnover),
+			Ignore:               big.NewFloat(Ignore),
 		}
 
 		Klines = append(Klines, Kline)
@@ -72,5 +76,3 @@ func GetKlines(params *KlinesReq) (Klines []*KlinesData) {
 
 	return
 }
-
-
