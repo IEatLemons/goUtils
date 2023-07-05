@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type KlinesData struct {
+type Klines struct {
 	OpenTime             time.Time  `json:"0"`  // k线开盘时间
 	OpenPrice            *big.Float `json:"1"`  // 开盘价
 	HighPrice            *big.Float `json:"2"`  // 最高价

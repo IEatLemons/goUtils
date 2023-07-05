@@ -76,6 +76,7 @@ require (
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 // indirect
 	github.com/tealeg/xlsx v1.0.5 // indirect
+	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
@@ -105,6 +106,7 @@ require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/gin-gonic/gin v1.8.2
+	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/ipfs/go-ipfs-api v0.4.0
 	github.com/joho/godotenv v1.4.0
 	github.com/sajari/regression v1.0.1

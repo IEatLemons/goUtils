@@ -30,7 +30,7 @@ type KlinesReq struct {
 	Limit     Interval  `json:"limit"`
 }
 
-func (c *klines) GetKlines(params *KlinesReq) (Klines []*binance_struct.KlinesData, err error) {
+func (c *klines) GetKlines(params *KlinesReq) (Klines []*binance_struct.Klines, err error) {
 	values := &url.Values{}
 	values.Set("symbol", string(params.Symbol))
 	values.Set("interval", string(params.Interval))
@@ -45,7 +45,7 @@ func (c *klines) GetKlines(params *KlinesReq) (Klines []*binance_struct.KlinesDa
 		fmt.Println("Parsing JSON failed:", err)
 		return
 	}
-	Klines = []*binance_struct.KlinesData{}
+	Klines = []*binance_struct.Klines{}
 	for _, data := range data {
 		OpenPrice, _ := strconv.ParseFloat(data[1].(string), 64)
 		HighPrice, _ := strconv.ParseFloat(data[2].(string), 64)
@@ -56,7 +56,7 @@ func (c *klines) GetKlines(params *KlinesReq) (Klines []*binance_struct.KlinesDa
 		ActiveBuyingVolume, _ := strconv.ParseFloat(data[9].(string), 64)
 		ActiveBuyingTurnover, _ := strconv.ParseFloat(data[10].(string), 64)
 		Ignore, _ := strconv.ParseFloat(data[11].(string), 64)
-		Kline := &binance_struct.KlinesData{
+		Kline := &binance_struct.Klines{
 			OpenTime:             time.Unix(int64((data[0].(float64) / 1000)), 0),
 			OpenPrice:            big.NewFloat(OpenPrice),
 			HighPrice:            big.NewFloat(HighPrice),
