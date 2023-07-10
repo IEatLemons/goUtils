@@ -27,13 +27,16 @@ type KlinesReq struct {
 	Interval  Interval  `json:"interval"`
 	StartTime time.Time `json:"startTime"`
 	EndTime   time.Time `json:"endTime"`
-	Limit     Interval  `json:"limit"`
+	Limit     uint64    `json:"limit"`
 }
 
 func (c *klines) GetKlines(params *KlinesReq) (Klines []*binance_struct.Klines, err error) {
 	values := &url.Values{}
 	values.Set("symbol", string(params.Symbol))
 	values.Set("interval", string(params.Interval))
+	if params.Limit != 0 {
+		values.Set("limit", strconv.FormatUint(params.Limit, 10))
+	}
 	result, err := c.klines.QuestSimple(values)
 	if err != nil {
 		log.Fatalln(err)
