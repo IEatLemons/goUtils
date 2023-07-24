@@ -9,6 +9,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -153,17 +154,17 @@ func (R *Request) newRequest() (result *http.Response, err error) {
 	client := &http.Client{}
 	var req *http.Request
 	var body *strings.Reader
-	url := R.Path
+	apiUrl := R.Path
 	switch R.Method {
 	case GET:
 		body = strings.NewReader("")
+		params := url.Values{}
 		if R.Params != nil {
-			arg := ""
 			for k, v := range R.Params {
-				arg += fmt.Sprintf("%s=%s&", k, v)
+				params.Add(k, fmt.Sprintf("%s", v))
 			}
-			url += "?" + arg
 		}
+		apiUrl += "?" + params.Encode()
 	default:
 		params, err := json.Marshal(R.Params)
 		if err != nil {
@@ -172,16 +173,16 @@ func (R *Request) newRequest() (result *http.Response, err error) {
 		body = strings.NewReader(string(params))
 	}
 	if R.Payload != nil {
-		log.Println("[Request]", "["+R.Method+"]", url)
-		req, err = http.NewRequest(string(R.Method), url, R.Payload.Body)
+		log.Println("[Request]", "["+R.Method+"]", apiUrl)
+		req, err = http.NewRequest(string(R.Method), apiUrl, R.Payload.Body)
 		req.Header.Set("Content-Type", R.Payload.ContentType)
 	} else if R.RawQuery != "" {
-		log.Println("[Request]", "["+R.Method+"]", url, R.RawQuery)
-		req, err = http.NewRequest(string(R.Method), url, nil)
+		log.Println("[Request]", "["+R.Method+"]", apiUrl, R.RawQuery)
+		req, err = http.NewRequest(string(R.Method), apiUrl, nil)
 		req.URL.RawQuery = R.RawQuery
 	} else {
-		log.Println("[Request]", "["+R.Method+"]", url, body)
-		req, err = http.NewRequest(string(R.Method), url, body)
+		log.Println("[Request]", "["+R.Method+"]", apiUrl, body)
+		req, err = http.NewRequest(string(R.Method), apiUrl, body)
 	}
 	if err != nil {
 		return
