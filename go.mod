@@ -109,6 +109,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/ipfs/go-ipfs-api v0.4.0
 	github.com/joho/godotenv v1.4.0
+	github.com/robfig/cron v1.2.0
 	github.com/sajari/regression v1.0.1
 	github.com/xormplus/xorm v0.0.0-20210822100304-4e1d4fcc1e67
 	github.com/xuri/excelize/v2 v2.7.0
